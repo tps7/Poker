@@ -1,20 +1,50 @@
 import java.lang.Math;
+import java.util.*;
 public class Deck {
-	public Card[] cards = new Card[52];
+	//public Card[] cards = new Card[52];
+	public ArrayList<Card> cards = new ArrayList<Card>();
+	public int numCards = 52;
 	
 	public Deck() {
 		//make cards for deck
 		Character[] suits = new Character[] {'s', 'c', 'd', 'h'};
-		int s = 0;
-		int count = 2;
-		for (int k = 0; k < cards.length; k++) {
-			cards[k] = new Card(count, suits[s]);
+		int s = 0; //keeps track of what suit the card is
+		int count = 2; //value of the card
+		for (int k = 0; k < 52; k++) {
+			cards.add(new Card(count, suits[s]));
 			count++;
 			if (count == 15) {
 				count = 2;
 				s++;
 			}
 		}
+		numCards = 52;
+	}
+	
+	public Card Deal() {
+		Card c = cards.get(0);
+		cards.remove(0);
+		numCards--;
+		return c;
+	}
+	public void remove(Card c) {
+		cards.remove(c);
+		numCards--;
+	}
+	public void reset() {
+		int s = 0;
+		int count = 2;
+		cards.clear();
+		Character[] suits = new Character[] {'s', 'c', 'd', 'h'};
+		for (int k = 0; k < 52; k++) {
+			cards.add(new Card(count, suits[s]));
+			count++;
+			if (count == 15) {
+				count = 2;
+				s++;
+			}
+		}
+		numCards = 52;
 	}
 	
 	/**
@@ -25,18 +55,18 @@ public class Deck {
 	public void shuffle() {
 		//starting with 10 to make sure I get it right
 		//int[] order = new int[52];
-		for (int k = 51; k > 0; k--) {
+		for (int k = numCards - 1; k > 0; k--) {
 			int v = (int) (Math.random() * k);
 			//System.out.println(v);
-			Card tmp = cards[v];
-			cards[v] = cards[k];
-			cards[k] = tmp;
+			Card tmp = cards.get(v);
+			cards.set(v, cards.get(k));
+			cards.set(k, tmp);
 		}
 	}
 	
 	public void print() {
-		for (int k = 0; k < 52; k++) {
-			cards[k].printCard();
+		for (int k = 0; k < numCards; k++) {
+			cards.get(k).printCard();
 		}
 	}
 	

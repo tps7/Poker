@@ -6,9 +6,10 @@ import java.util.ArrayList;
  * Add comments to Code it is very confusing right now
  * Simplify and delete methods to make code more understandable
  * Understand algorithim to get all combinations better.
- * Write methods for a game.
+ * Do Graphics so the game can run
  * Add table class. This class will have a game and a number of players playing.
  * Write somthing for wild cards (Do this after Holdem works?)
+ * Betting? I don't really need to include this.
  */
 public class Game {
 	public static ArrayList<Player> players = new ArrayList<Player>();
@@ -21,6 +22,7 @@ public class Game {
 		players.add(new Player("Bob Joe"));
 		players.add(new Player("Joe Bob"));
 		deck.shuffle();
+		numPlayers = 4;
 	}
 	
 	public Game(ArrayList<Player> p) {
@@ -35,8 +37,8 @@ public class Game {
 	 * 2 if the hands are equal.
 	 */
 	public static int compareHands(ArrayList<Card> h1, ArrayList<Card> h2) {
-		ArrayList<Integer> one = getHand(h1);
-		ArrayList<Integer> two = getHand(h2);
+		ArrayList<Integer> one = getHand(getBestHand(h1, 5));
+		ArrayList<Integer> two = getHand(getBestHand(h2, 5));
 		if (one.get(0) > two.get(0)) {
 			return 0;
 		} else if(two.get(0) > one.get(0)) {
@@ -88,10 +90,10 @@ public class Game {
 	 */
 	public static ArrayList<Integer> getHand(ArrayList<Card> hand) {
 		//return a list of integers to handle edge cases.
-		for (Card a : hand) {
-			a.printCard();
-		}
-		System.out.println("\n \n \n \n");
+//		for (Card a : hand) {
+//			a.printCard();
+//		}
+//		System.out.println("\n \n \n \n");
 		int handValue = 0;
 		//Sort array highest card to lowest card
 		for (int k = 1; k < hand.size(); k++) {
@@ -140,7 +142,6 @@ public class Game {
 					//three_of_a_kind = true;
 					pairs--;
 					if (k > 1) {
-						//System.out.println();
 						hands[0] = false;
 					}
 				}
@@ -167,7 +168,6 @@ public class Game {
 			hands[7] = true;
 		}
 		//check for fullhouse
-		//System.out.println(hands[0]);
 		if (hands[2] == true && hands[0] == true) {
 			hands[5] = true;
 		}
@@ -185,68 +185,13 @@ public class Game {
 //		}
 		ArrayList<Integer> rtrn = new ArrayList<Integer>();
 		for (Card a : hand) {
-			a.printCard();
+//			a.printCard();
 			rtrn.add(a.value);
 		}
 		rtrn.add(0, handValue);
 		return rtrn;
-		
-		//System.out.println(hand.toString());
 	}
-	
-
 	private static int t = 0;
-	
-	/**
-	 * Given an array and size of a sub array this function gets all permutations of the given array of size r.
-	 * @param arr The given array 
-	 * @param r The size of the sub arrays
-	 * @return a 2d array with each array being one combination.
-	 */
-    public static ArrayList<ArrayList<Integer>> getCombos(ArrayList<Integer> arr, int r) {
-    	//int data[]=new int[r]; 
-        ArrayList<Integer> data = new ArrayList();
-  
-        // Print all combination using temprary array 'data[]'
-        ArrayList<ArrayList<Integer>> rtrn = new ArrayList<ArrayList<Integer>>();
-        rtrn.add(comboUtil(arr, data, 0, arr.size()-1, 0, r));
-        return rtrn;
-        //return null;
-    }
-    public static ArrayList<Integer> comboUtil(ArrayList<Integer> arr, ArrayList<Integer> data, int start, int end, 
-    		int index, int r) 
-    {
-    	ArrayList<Integer> rtrn = new ArrayList<Integer>();
-        // Current combination is ready to be printed, print it 
-        if (index == r) 
-        { 
-            for (int j=0; j<r; j++) {
-            	rtrn.add(data.get(j));
-            }
-                //System.out.print(data.get(j) + " "); 
-            //System.out.println("");
-            t++;
-            return rtrn;
-        } 
-  
-        // replace index with all possible elements. The condition 
-        // "end-i+1 >= r-index" makes sure that including one element 
-        // at index will make a combination with remaining elements 
-        // at remaining positions 
-        for (int i=start; i<=end && end-i+1 >= r-index; i++) 
-        {
-        	data.add(index, arr.get(i));
-            //data.get(index) = arr.get(i);
-        	// Since the elements are sorted, all occurrences of an element
-            // must be together 
-            comboUtil(arr, data, i+1, end, index+1, r); 
-            
-//            while (arr.get(i) == arr.get(i+1)) {
-//            	i++;
-//            }
-        }
-		return rtrn;
-    } 
     /**
      * This functions goes through all diffrent permuatations of a hand and picks out the best poker hand.
      * To do this the function goes through each permutation and calls compare hands with this permatation and 
@@ -269,8 +214,6 @@ public class Game {
         { 
             for (int j=0; j<r; j++) {
             	rtrn.add(data.get(j));
-//            	data.get(j).printCard();
-            	//System.out.println(r); 
             }
             
             if (best.isEmpty()) {
@@ -278,8 +221,6 @@ public class Game {
             } else if (compareHands(rtrn, best) == 0) {
             	best = rtrn;
             }
-            //System.out.println("");
-            
             t++;
             return best;
         } 
@@ -311,100 +252,33 @@ public class Game {
      * @param r The size of the subarray for permutations. This should always be 5.
      * @return The best poker hand of the Cards given.
      */
-    public static ArrayList<Card> getCombosC(ArrayList<Card> arr, int r) {
-    	//int data[]=new int[r]; 
+    public static ArrayList<Card> getBestHand(ArrayList<Card> arr, int r) {
         ArrayList<Card> data = new ArrayList();
         ArrayList<Card> best = new ArrayList();
         // Print all combination using temprary array 'data[]'
         ArrayList<Card> rtrn = new ArrayList<Card>();
         rtrn = comboUtilC(arr, data, best, 0, arr.size()-1, 0, r);
-        
         return rtrn;
         //return null;
     }
-//    public static ArrayList<Integer> comboUtil(ArrayList<Card> hand, ArrayList<Integer> data, int start, int end, 
-//    		int index, int r) 
-//    {
-//    	ArrayList<Integer> arr = new ArrayList<Integer>();
-//		for (int k = 1; k < hand.size(); k++) {
-//			Card key = hand.get(k);
-//			int j = k - 1;
-//			//Move elements that are greater than key to one position ahead of there current postion
-//			while (j >= 0 && (hand.get(j).getValue() < key.getValue())) {
-//				hand.set(j + 1, hand.get(j));
-//				j = j - 1;
-//			}
-//			hand.set(j + 1, key);
-//		}
-//		for (int k = 0; k < hand.size(); k++) {
-//			arr.add(hand.get(k).value);
-//		}
-//		
-//    	ArrayList<Integer> rtrn = new ArrayList<Integer>();
-//        // Current combination is ready to be printed, print it 
-//        if (index == r) 
-//        { 
-//            for (int j=0; j<r; j++) {
-//            	rtrn.add(data.get(j));
-//            }
-//                //System.out.print(data.get(j) + " "); 
-//            //System.out.println("");
-//            t++;
-//            return rtrn;
-//        } 
-//  
-//        // replace index with all possible elements. The condition 
-//        // "end-i+1 >= r-index" makes sure that including one element 
-//        // at index will make a combination with remaining elements 
-//        // at remaining positions 
-//        for (int i=start; i<=end && end-i+1 >= r-index; i++) 
-//        {
-//        	data.add(index, arr.get(i));
-//            //data.get(index) = arr.get(i);
-//        	// Since the elements are sorted, all occurrences of an element
-//            // must be together 
-//            comboUtil(arr, data, i+1, end, index+1, r); 
-//            
-////            while (arr.get(i) == arr.get(i+1)) {
-////            	i++;
-////            }
-//        }
-//		return rtrn;
-//    }
     
-//    public int getBestHand(ArrayList<Card> hand) {
-//    	ArrayList<Integer> arr = new ArrayList<Integer>();
-//		for (int k = 1; k < hand.size(); k++) {
-//			Card key = hand.get(k);
-//			int j = k - 1;
-//			//Move elements that are greater than key to one position ahead of there current postion
-//			while (j >= 0 && (hand.get(j).getValue() < key.getValue())) {
-//				hand.set(j + 1, hand.get(j));
-//				j = j - 1;
-//			}
-//			hand.set(j + 1, key);
-//		}
-//		for (int k = 0; k < hand.size(); k++) {
-//			arr.add(hand.get(k).value);
-//		}
-//    	ArrayList<ArrayList<Integer>> hands = getCombos(arr, 5); //new ArrayList<ArrayList<Integer>>();
-//    	//ArrayList<Integer> maxHand = getHand(hand);
-//    	//ArrayList<Integer>  = getHand(c);
-//    	return 0;
-//    	
-//    }
-    
-    public ArrayList<Integer> intGetBestHand(ArrayList<Card> c) {
-    	return null;
-    }
     
 	//Winner function to be completed once player function is fixed.
-//	public Player winner() {
-//		Player win = players.get(0);
-//		for (int k = 1; k < players.size(); k++) {
-//			compareHands(win.getHand(), players.get(k))
-//		}
-//		return win;
+	public Player getWinner() {
+		Player win = players.get(0);
+		for (int k = 1; k < players.size(); k++) {
+			if (compareHands(win.getHand(), players.get(k).getHand()) == 1) {
+				win = players.get(k);
+			}
+		}
+		return win;
+	}
+	
+//	/**
+//	 * Call this method to play the game.
+//	 */
+//	public void Play() {
+//		
 //	}
 	
 	public static void main(String[] args) {
@@ -412,7 +286,7 @@ public class Game {
 		for (int k = 0; k < 5; k++) {
 //			System.out.println(players.size());
 //			System.out.println(deck.cards.length);
-			players.get(0).addCard(deck.cards[k]);
+			players.get(0).addCard(deck.cards.get(k));
 		}
 		ArrayList<Card> c = new ArrayList<Card>();
 		c.add(new Card(2, 'h'));
@@ -436,94 +310,17 @@ public class Game {
 		//Input list must be sorted
 		//printCombination(rtrn, 5);
 		ArrayList<Card> q = new ArrayList<Card>();
-		q = getCombosC(c2, 5);
+		q = getBestHand(c2, 5);
 		
 		
 //		for (Card a : c) {
 //			a.printCard();
 //		}
-		System.out.println(t);
+		//System.out.println(t);
 		int e = 5;
 		//System.out.println(q.size());
-		for (int k = 0; k < q.size(); k++) {
-			q.get(k).printCard();
-		}
+//		for (int k = 0; k < q.size(); k++) {
+//			q.get(k).printCard();
+//		}
 	}
 }
-
-/* arr[]  ---> Input Array 
-data[] ---> Temporary array to store current combination 
-start & end ---> Staring and Ending indexes in arr[] 
-index  ---> Current index in data[] 
-r ---> Size of a combination to be printed */
-//public static void combinationUtil(ArrayList<Integer> arr, ArrayList<Integer> data, int start, int end, int index, int r) 
-//{ 
-//    // Current combination is ready to be printed, print it 
-//    if (index == r) 
-//    { 
-//        for (int j=0; j<r; j++) 
-//            System.out.print(data.get(j) + " "); 
-//        System.out.println("");
-//        t++;
-//        return; 
-//    } 
-//
-//    // replace index with all possible elements. The condition 
-//    // "end-i+1 >= r-index" makes sure that including one element 
-//    // at index will make a combination with remaining elements 
-//    // at remaining positions 
-//    for (int i=start; i<=end && end-i+1 >= r-index; i++) 
-//    {
-//    	data.add(index, arr.get(i));
-//        //data.get(index) = arr.get(i);
-//    	// Since the elements are sorted, all occurrences of an element
-//        // must be together 
-//        combinationUtil(arr, data, i+1, end, index+1, r); 
-//        
-////        while (arr.get(i) == arr.get(i+1)) {
-////        	i++;
-////        }
-//    }
-//} 
-//static void printCombination(ArrayList<Integer> arr, int r) 
-//{ 
-//    // A temporary array to store all combination one by one 
-//    //int data[]=new int[r]; 
-//    ArrayList<Integer> data = new ArrayList();
-//
-//    // Print all combination using temprary array 'data[]' 
-//    combinationUtil(arr, data, 0, arr.size()-1, 0, r); 
-//}
-
-//public ArrayList<Integer> getBestHand(ArrayList<Card> hand) {
-//if (hand.size() <= 5) {
-//	return getHand(hand);
-//}
-//int index = 0;
-//int counter = 0;
-//int cards = hand.size() - 1;
-//ArrayList<Integer> maxHand = getHand(new ArrayList<Card>(hand.subList(0, 5)));
-//for (int k = 1; k < cards; k++) {
-//	ArrayList<Integer> test = getHand(new ArrayList<Card>(hand.subList(index, index + 5)));
-//	if (compareIntHands(test, maxHand) == 0) {
-//		maxHand = test;
-//	}
-//}
-//while(index > 0) {
-//	ArrayList<Integer> test = getHand(new ArrayList<Card>(hand.subList(index, index + 5)));
-//	if (compareIntHands(test, maxHand) == 0) {
-//		maxHand = test;
-//	}
-//	index--;
-//}
-////while()
-//while(index <= hand.size() - 6) {
-////for (int k = 0; k < hand.size(); k++) {
-//	ArrayList<Integer> test = getHand(new ArrayList<Card>(hand.subList(index, index + 5)));
-//	for (int j = index; j < index + 5; j++) {
-//		
-//	}
-//	
-//}
-//return maxHand;
-//}

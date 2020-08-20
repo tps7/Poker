@@ -61,4 +61,31 @@ public class Card {
 		}
 		System.out.println(s);
 	}
+	public String getStringCard() {
+		String s = "";
+		if (value > 10) {
+			if (value == 11) {
+				s += "Jack";
+			} else if (value == 12) {
+				s += "Queen";
+			} else if (value == 13) {
+				s += "King";
+			} else {
+				s += "Ace";
+			}
+		} else {
+			s += Integer.toString(value);
+		}
+		s += " of ";
+		if (suit == 's') {
+			s += "Spades";
+		} else if (suit == 'c') {
+			s += "Clubs";
+		} else if (suit == 'd') {
+			s += "Diamonds";
+		} else {
+			s += "Hearts";
+		}
+		return s;
+	}
 }
